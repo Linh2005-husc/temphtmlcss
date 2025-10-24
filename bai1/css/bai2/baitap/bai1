@@ -1,0 +1,136 @@
+
+#include <iostream>
+#include <string>
+using namespace std;
+
+
+class Khachhang {
+private:
+    string maSo;
+    string hoTen;
+    string diaChi;
+    float soM3;
+     ngayTinhTien;
+
+public:
+    void nhap() {
+        cout << "Nhap ma so: ";
+        cin >> maSo;
+        cout << "Nhap ho ten: ";
+        cin.ignore();
+        getline(cin, hoTen);
+        cout << "Nhap dia chi: ";
+        getline(cin, diaChi);
+        cout << "Nhap so m3 tieu thu: ";
+        cin >> soM3;
+        cout << "Nhap ngay tinh tien: \n";
+        ngayTinhTien.nhap();
+    }
+
+    void xuat() {
+        cout << "Ma so: " << maSo << ", Ho ten: " << hoTen 
+             << ", Dia chi: " << diaChi << ", So m3 tieu thu: " 
+             << soM3 << ", Ngay tinh tien: ";
+        ngayTinhTien.xuat();
+        cout << ", So tien phai tra: " << tinhTien() << " VND\n";
+    }
+
+    string MaSo() {
+        return maSo;
+    }
+
+    float SoM3() {
+        return soM3;
+    }
+
+    Ngay NgayTinhTien() {
+        return ngayTinhTien;
+    }
+
+    float tinhTien() {
+        if (soM3 <= 10) return soM3 * 8500;
+        else if (soM3 <= 20) return 10 * 8500 + (soM3 - 10) * 9900;
+        else if (soM3 <= 30) return 10 * 8500 + 10 * 9900 + (soM3 - 20) * 16000;
+        else return 10 * 8500 + 10 * 9900 + 10 * 16000 + (soM3 - 30) * 27000;
+    }
+};
+
+class Quanly {
+private:
+    Khachhang danhSach[1000];
+    int n;
+
+public:
+    Quanly() : n(0) {}
+
+    void nhapDanhSach() {
+        int soLuong;
+        cout << "Nhap so luong khach hang: ";
+        cin >> soLuong;
+
+        for (int i = 0; i < soLuong; ++i) {
+            Khachhang kh;
+            kh.nhap();
+            bool trung = false;
+            for (int j = 0; j < n; ++j) {
+                if (danhSach[j].MaSo() == kh.MaSo()) {
+                    trung = true;
+                    cout << "Ma so da ton tai! Nhap lai.\n";
+                    break;
+                }
+            }
+            if (!trung) {
+                danhSach[n++] = kh; 
+            }
+        }
+    }
+
+    void max() {
+        float maxTien = danhSach[0].tinhTien();
+        cout << "Khach hang co so tien phai tra cao nhat:\n";
+        for (int i = 0; i < n; ++i) {
+            if (danhSach[i].tinhTien() == maxTien) {
+                danhSach[i].xuat();
+            }
+        }
+    }
+
+    void sapXep() {
+        for (int i = 0; i < n - 1; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                if (danhSach[i].NgayTinhTien().nam > danhSach[j].NgayTinhTien().nam ||
+                    (danhSach[i].NgayTinhTien().nam == danhSach[j].NgayTinhTien().nam && 
+                     danhSach[i].NgayTinhTien().thang > danhSach[j].NgayTinhTien().thang) ||
+                    (danhSach[i].NgayTinhTien().nam == danhSach[j].NgayTinhTien().nam && 
+                     danhSach[i].NgayTinhTien().thang == danhSach[j].NgayTinhTien().thang && 
+                     danhSach[i].NgayTinhTien().ngay > danhSach[j].NgayTinhTien().ngay)) {
+                    swap(danhSach[i], danhSach[j]);
+                }
+            }
+        }
+
+        cout << "Danh sach khach hang da sap xep:\n";
+        for (int i = 0; i < n; ++i) {
+            danhSach[i].xuat();
+        }
+    }
+
+    void xoaKhachHang() {
+        for (int i = 0; i < n; ) {
+            if (danhSach[i].SoM3() <= 0) { 
+                danhSach[i] = danhSach[--n]; 
+            } else {
+                ++i;
+            }
+        }
+        cout << "Da xoa khach hang co so m3 tieu thu = 0.\n";
+    }
+};
+
+int main(){
+    Quanly q;
+    q.nhapDanhSach();
+    q.max();
+    q.sapXep();
+    q.xoaKhachHang();
+}
